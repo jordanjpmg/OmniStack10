@@ -1,6 +1,7 @@
 const axios = require("axios");
 const Dev = require("../models/Dev");
 const parseStringAsArray = require("../utils/parseStringAsArray");
+const { findConnections, sendMessage } = require("../websocket");
 
 /*Funções controller : 
 index:  mostrar lita de regisro
@@ -42,8 +43,18 @@ module.exports = {
         techs: techsArray,
         location
       });
-    }
 
+      /**
+       * Filtrar os deve que estão a 'X'KM  de distancia
+       * e que o novo dev tenho pelo menos uma das tecnologias filtradas
+       */
+
+      const sendSocketMessageTo = findConnections(
+        { latitude, longitude },
+        techsArray
+      );
+      sendMessage(sendSocketMessageTo, "new-dev", dev);
+    }
     return res.json(dev);
   }
 };
